@@ -1,0 +1,113 @@
+int is_palindrome(listint_t **head);
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+// Definition for singly-linked list
+struct ListNode {
+    int val;
+    struct ListNode* next;
+};
+
+// Function to reverse a linked list
+struct ListNode* reverseList(struct ListNode* head) {
+    struct ListNode* prev = NULL;
+    struct ListNode* current = head;
+    struct ListNode* next = NULL;
+
+    while (current != NULL) {
+        next = current->next;
+        current->next = prev;
+        prev = current;
+        current = next;
+    }
+
+    return prev;
+}
+
+// Function to check if a linked list is a palindrome
+bool isPalindrome(struct ListNode* head) {
+    if (head == NULL || head->next == NULL) {
+        return true; // An empty list or a list with one node is a palindrome
+    }
+
+    // Use the slow and fast pointers to find the middle of the list
+    struct ListNode* slow = head;
+    struct ListNode* fast = head;
+
+    while (fast->next != NULL && fast->next->next != NULL) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    // Reverse the second half of the list
+    struct ListNode* secondHalf = reverseList(slow->next);
+
+    // Compare the first half and the reversed second half
+    struct ListNode* firstHalf = head;
+
+    while (secondHalf != NULL) {
+        if (firstHalf->val != secondHalf->val) {
+            return false; // The list is not a palindrome
+        }
+        firstHalf = firstHalf->next;
+        secondHalf = secondHalf->next;
+    }
+
+    return true; // The list is a palindrome
+}
+
+// Function to print the elements of a linked list
+void printList(struct ListNode* head) {
+    while (head != NULL) {
+        printf("%d -> ", head->val);
+        head = head->next;
+    }
+    printf("NULL\n");
+}
+
+// Function to create a new node with a given value
+struct ListNode* createNode(int value) {
+    struct ListNode* newNode = (struct ListNode*)malloc(sizeof(struct ListNode));
+    newNode->val = value;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to free the memory allocated for the linked list
+void freeList(struct ListNode* head) {
+    struct ListNode* current = head;
+    struct ListNode* next;
+
+    while (current != NULL) {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+}
+
+// Example usage
+int main() {
+    // Create a sample palindrome linked list: 1 -> 2 -> 3 -> 2 -> 1
+    struct ListNode* head = createNode(1);
+    head->next = createNode(2);
+    head->next->next = createNode(3);
+    head->next->next->next = createNode(2);
+    head->next->next->next->next = createNode(1);
+
+    printf("Original Linked List: ");
+    printList(head);
+
+    if (isPalindrome(head)) {
+        printf("The linked list is a palindrome.\n");
+    } else {
+        printf("The linked list is not a palindrome.\n");
+    }
+
+    // Free the memory allocated for the linked list
+    freeList(head);
+
+    return 0;
+}
+
